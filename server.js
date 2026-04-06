@@ -43,13 +43,15 @@ app.post('/log', async (req, res) => {
     console.log(`[${device}]: ${message || 'Данные получены'}`);
 
     try {
-        // Записываем в таблицу (убедись, что колонки совпадают с твоим CREATE TABLE)
-        await pool.query(
-            'INSERT INTO measurements (temp, uptime) VALUES ($1, $2)',
+        // Записываем в таблицу 
+        const result = await pool.query(
+            'INSERT INTO measurements (temp, uptime) VALUES ($1, $2) RETURNING id',
             [temp || 0, uptime || 0]
         );
-        // Вот этот лог подтвердит, что база приняла данные
-        console.log(`✅ Записано в БД (ID: ${result.rows[0].id})`);
+        
+        // Теперь result существует, и мы можем взять ID новой строки
+        const newId = result.rows[0].id;
+        console.log(`[${now}] ✅ Данные от ${device} сохранены. ID в базе: ${newId}`);
         
         // Отправляем в React через сокеты для "живого" обновления
         io.emit('device_log', { 
