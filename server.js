@@ -19,7 +19,7 @@ const pool = new Pool({
   user: 'postgres',           
   host: 'localhost',          
   database: 'iot_hub_db',     
-  password: 'ваша_секретная_строка', // Проверь пароль!
+  password: '2310819', // Проверь пароль!
   port: 5432,
 });
 
@@ -48,6 +48,8 @@ app.post('/log', async (req, res) => {
             'INSERT INTO measurements (temp, uptime) VALUES ($1, $2)',
             [temp || 0, uptime || 0]
         );
+        // Вот этот лог подтвердит, что база приняла данные
+        console.log(`✅ Записано в БД (ID: ${result.rows[0].id})`);
         
         // Отправляем в React через сокеты для "живого" обновления
         io.emit('device_log', { 
@@ -60,7 +62,7 @@ app.post('/log', async (req, res) => {
         
         res.sendStatus(200);
     } catch (err) {
-        console.error('Ошибка записи в БД:', err);
+        console.error('❌ ОШИБКА БАЗЫ ДАННЫХ:', err.message);
         res.status(500).send('Database Error');
     }
 });
@@ -72,5 +74,5 @@ io.on('connection', (socket) => {
 
 const PORT = 3000;
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Сервер: http://0.0.0.0:${PORT}`);
+    console.log(`Сервер запущен на : http://0.0.0.0:${PORT}`);
 });
