@@ -39,7 +39,7 @@ app.post('/upload-firmware', upload.single('file'), (req, res) => {
 // --- ПРИЕМ ЛОГОВ И ЗАПИСЬ В БД ---
 app.post('/log', async (req, res) => {
     const { device, message, temp, uptime } = req.body; // Добавил temp и uptime из прошлых шагов
-    
+    const now = new Date().toLocaleString();
     console.log(`[${device}]: ${message || 'Данные получены'}`);
 
     try {
