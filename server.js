@@ -73,6 +73,21 @@ app.post('/log', async (req, res) => {
 io.on('connection', (socket) => {
     console.log('Клиент (React или ESP32) подключился');
 });
+// --- ЭНДПОИНТ ДЛЯ ПОЛУЧЕНИЯ ИСТОРИИ ИЗ БАЗЫ ---
+app.get('/api/status', async (req, res) => {
+    try {
+        // Берем последние 10 записей, сортируем по времени (самые свежие сверху)
+        const result = await pool.query(
+            'SELECT * FROM measurements ORDER BY created_at DESC LIMIT 10'
+        );
+        
+        // Отправляем массив данных в React
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Ошибка при чтении из БД:', err.message);
+        res.status(500).json({ error: 'Ошибка базы данных' });
+    }
+});
 
 const PORT = 3000;
 server.listen(PORT, '0.0.0.0', () => {
