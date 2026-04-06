@@ -19,7 +19,7 @@ const pool = new Pool({
   user: 'postgres',           
   host: 'localhost',          
   database: 'iot_hub_db',     
-  password: '2310819', // Проверь пароль!
+  password: '2310819', 
   port: 5432,
 });
 
